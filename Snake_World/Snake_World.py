@@ -21,6 +21,7 @@ while verdict:
 	black = (0 , 0 , 0 )
 	white = (255 , 255, 255)
 	blue = (0 , 0 , 255)
+	brown = (219 , 84 , 6)
 	font  = pygame.font.SysFont(None , 25)
 	msg = 'Ohh!! Snake Crashed.. Press "P" to Play More and "Q" to Quit'
 	crashed = False
@@ -30,25 +31,23 @@ while verdict:
 
 	snake_lead_x = screen_width * 0.45
 	snake_lead_y = screen_height * 0.8
-	FPS = 100
 	snake_x_change = 0
 	snake_y_change = 0
 	snake_lead_x+=snake_x_change
 	snake_lead_y+=snake_y_change
+	score = 0
+	speed = 40
+	FPS = speed + score
 	snakelist = []
-	snakeinitiallength = 5
+	snakeinitiallength = 3
 	snakelength = snakeinitiallength
 	food_x = random.randint(0 , screen_width - food_block_width)
 	food_y = random.randrange(0 , screen_height - food_block_width)
-	speed = 5
 	highscore = filename.read()
 	filename.close()
 	
 	if os.stat('./.myfolder/highscore.txt').st_size == 0:
 		highscore = 0
-	
-	score = 0
-
 
 	gameDisplay = pygame.display.set_mode((screen_width , screen_height))
 	pygame.display.set_caption('My_Game')
@@ -63,8 +62,13 @@ while verdict:
 	snake_lead_x = snake_lead_x + snake_block_width * (snakeinitiallength - 1)   
 
 	def snake(snake_block_width , snakelist):
-		for XY in snakelist: 
-			pygame.draw.rect(gameDisplay , green , [XY[0] , XY[1] , snake_block_width , snake_block_width])
+		i = 0
+		for XY in snakelist:
+			i = i + 1
+			if i == len(snakelist):
+				pygame.draw.rect(gameDisplay , brown , [XY[0] , XY[1] , snake_block_width , snake_block_width])	 
+			else:
+				pygame.draw.rect(gameDisplay , green , [XY[0] , XY[1] , snake_block_width , snake_block_width])
 
 	def food_pos(food_x , food_y):
 			food_x = round(food_x / 10.0) * 10.0
@@ -123,6 +127,7 @@ while verdict:
 
 	gameDisplay.fill(black)
 	snake(snake_block_width , snakelist)
+	print(snakelist)
 	pygame.display.update()	
 	get = False
 	
@@ -136,16 +141,16 @@ while verdict:
 			if event.type == pygame.KEYDOWN:
 				get = True
 				if event.key == pygame.K_UP:
-					snake_y_change = -speed
+					snake_y_change = -snake_block_width
 					snake_x_change = 0
 				if event.key == pygame.K_DOWN:
-					snake_y_change = speed
+					snake_y_change = snake_block_width
 					snake_x_change = 0
 				if event.key == pygame.K_LEFT:
-					snake_x_change = -speed
+					snake_x_change = -snake_block_width
 					snake_y_change = 0
 				if event.key == pygame.K_RIGHT:
-					snake_x_change = speed
+					snake_x_change = snake_block_width
 					snake_y_change = 0		
 			
 		if get:
@@ -157,12 +162,12 @@ while verdict:
 		snakehead.append(snake_lead_x)
 		snakehead.append(snake_lead_y)
 		snakelist.append(snakehead)
-		
 		if len(snakelist) > snakelength:
 			del snakelist[0]	
 		
 		food_pos(food_x , food_y)
 		snake(snake_block_width , snakelist)
+		print(snakelist)
 		food_x , food_y , score , snakelength =  check_update(snake_lead_x , snake_lead_y , food_x , food_y , score , snakelength)
 		
 		if get:
